@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScriptCreator Admin</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="app-shell hidden">
+        <header>
+            <div>
+                <div class="logo">ScriptCreator</div>
+                <div class="subtitle">Admin Control Panel</div>
+            </div>
+            <button class="close-ui-button" onclick="closeUI()">Tutup</button>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab active" data-tab="create">Create</button>
+            <button class="tab" data-tab="list">List</button>
+            <button class="tab" data-tab="admin">Admin</button>
+            <button class="tab" data-tab="export">Export</button>
+        </nav>
+
+        <section class="tab-body active" id="create">
+            <div class="job-shell">
+                <aside class="job-sidebar">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">Jobs Creator</div>
+                        <p class="sidebar-description">Generate unlimited jobs, zones, actions, garage systems, and imports from one modern menu.</p>
+                    </div>
+                    <nav class="sidebar-nav">
+                        <button class="sidebar-item active" data-panel="quick"><span class="sidebar-icon">🏠</span><span>Quick Start</span></button>
+                        <button class="sidebar-item" data-panel="jobs"><span class="sidebar-icon">🛠️</span><span>Create Job</span></button>
+                        <button class="sidebar-item" data-panel="zones"><span class="sidebar-icon">📍</span><span>Zone Types</span></button>
+                        <button class="sidebar-item" data-panel="community"><span class="sidebar-icon">🌐</span><span>Community Jobs</span></button>
+                        <button class="sidebar-item" data-panel="settings"><span class="sidebar-icon">⚙️</span><span>Integrations</span></button>
+                    </nav>
+                    <div class="sidebar-info">
+                        <span>Dependencies</span>
+                        <p>ESX / QBCore / QBox, ox_lib, oxmysql, optional ox_target.</p>
+                    </div>
+                </aside>
+                <main class="job-content">
+                    <div id="panel-quick" class="panel-content active">
+                        <div class="panel summary-card">
+                            <h3>Build custom jobs without coding</h3>
+                            <p>Use the tabs to configure job general settings, grades, player actions, vehicle interactions, blips, boss menus, collecting, crafting, garages and selling.</p>
+                        </div>
+                        <div class="feature-grid">
+                            <div class="feature-card" onclick="setActivePanel('jobs');">
+                                <strong>Player Actions</strong>
+                                <p>Search, handcuff, drag, carry, tackle, revive, heal.</p>
+                            </div>
+                            <div class="feature-card" onclick="setActivePanel('jobs');">
+                                <strong>Vehicle Actions</strong>
+                                <p>Hijack, repair, clean, impound and advanced vehicle options.</p>
+                            </div>
+                            <div class="feature-card" onclick="setActivePanel('zones');">
+                                <strong>Zone Types</strong>
+                                <p>Blips, boss actions, cloakrooms, collecting, garages, crafting, selling.</p>
+                            </div>
+                            <div class="feature-card" onclick="setActivePanel('community');">
+                                <strong>Community Jobs</strong>
+                                <p>Import pre-made jobs quickly and adapt them.</p>
+                            </div>
+                        </div>
+                        <div class="panel actions-overview">
+                            <h4>Ready to start?</h4>
+                            <button class="primary-button" onclick="selectCreateForm('job')">Open Job Creator</button>
+                        </div>
+                    </div>
+
+                    <div id="panel-jobs" class="panel-content hidden">
+                        <div class="panel flow-panel">
+                            <div class="panel-header">
+                                <div>
+                                    <h3>Create Job</h3>
+                                    <p>Configure every part of a job from one place.</p>
+                                </div>
+                                <span class="badge">Unlimited Jobs</span>
+                            </div>
+                            <div class="job-sections">
+                                <button class="section-tab active" data-section="general">General</button>
+                                <button class="section-tab" data-section="grades">Grades</button>
+                                <button class="section-tab" data-section="action">Actions</button>
+                                <button class="section-tab" data-section="blips">Blips</button>
+                                <button class="section-tab" data-section="bossmenu">Bossmenu</button>
+                                <button class="section-tab" data-section="collections">Collecting</button>
+                                <button class="section-tab" data-section="spawnerzones">Spawner Zones</button>
+                                <button class="section-tab" data-section="crafting">Crafting</button>
+                                <button class="section-tab" data-section="garages">Garages</button>
+                                <button class="section-tab" data-section="selling">Selling</button>
+                            </div>
+                            <div id="section-general" class="section-content active">
+                                <label>Name</label>
+                                <input id="jobName" type="text" placeholder="police" />
+                                <label>Label</label>
+                                <input id="jobLabel" type="text" placeholder="Police Department" />
+                                <label>Type</label>
+                                <input id="jobType" type="text" placeholder="leo" />
+                                <div class="checkbox-row">
+                                    <label><input id="jobDefaultDuty" type="checkbox" /> Default Duty</label>
+                                    <label><input id="jobOffDutyPay" type="checkbox" /> Off Duty Pay</label>
+                                </div>
+                                <label>Webhook Discord</label>
+                                <input id="jobWebhook" type="text" placeholder="https://discord.com/api/webhooks/..." />
+                            </div>
+                            <div id="section-grades" class="section-content hidden">
+                                <div class="grades-panel">
+                                    <div class="grades-form">
+                                        <h5>Add Grade</h5>
+                                        <label>Grade Label</label>
+                                        <input id="gradeLabel" type="text" placeholder="Recruit" />
+                                        <label>Salary</label>
+                                        <input id="gradeSalary" type="number" placeholder="100" />
+                                        <label class="checkbox-inline"><input id="gradeBoss" type="checkbox" /> Allow this grade to perform boss actions</label>
+                                        <button class="secondary-button" onclick="addGrade()">Add Grade</button>
+                                    </div>
+                                    <div class="grades-list-card">
+                                        <h5>Grades</h5>
+                                        <ul id="gradesList" class="sortable-list"></ul>
+                                        <p class="hint-text">Drag grades up and down to reorder.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="section-action" class="section-content hidden">
+                                <div class="action-section">
+                                    <h5>Player Actions</h5>
+                                    <p class="section-description">You can configure the actions players can perform on other players here.</p>
+                                    <div class="action-grid">
+                                        <label class="action-card"><input type="checkbox" id="actionHandcuff" /> Handcuff</label>
+                                        <label class="action-card"><input type="checkbox" id="actionEscort" /> Escort</label>
+                                        <label class="action-card"><input type="checkbox" id="actionSearch" /> Search</label>
+                                        <label class="action-card"><input type="checkbox" id="actionCarry" /> Carry</label>
+                                        <label class="action-card"><input type="checkbox" id="actionTackle" /> Tackle</label>
+                                        <label class="action-card"><input type="checkbox" id="actionBill" /> Bill</label>
+                                        <label class="action-card"><input type="checkbox" id="actionRevive" /> Revive</label>
+                                        <label class="action-card"><input type="checkbox" id="actionHeal" /> Heal</label>
+                                    </div>
+                                    <h5>Vehicle Actions</h5>
+                                    <p class="section-description">You can configure the actions players can perform on vehicles here.</p>
+                                    <div class="action-grid">
+                                        <label class="action-card"><input type="checkbox" id="actionPutInVehicle" /> Put inside vehicle</label>
+                                        <label class="action-card"><input type="checkbox" id="actionTakeOutVehicle" /> Take out of vehicle</label>
+                                        <label class="action-card"><input type="checkbox" id="actionHijack" /> Hijack</label>
+                                        <label class="action-card"><input type="checkbox" id="actionRepair" /> Repair</label>
+                                        <label class="action-card"><input type="checkbox" id="actionClean" /> Clean</label>
+                                        <label class="action-card"><input type="checkbox" id="actionImpound" /> Impound</label>
+                                    </div>
+                                    <button class="secondary-button" onclick="saveActions()">Save Actions</button>
+                                </div>
+                            </div>
+                            <div id="section-blips" class="section-content hidden">
+                                <label>Blips (JSON)</label>
+                                <textarea id="jobBlips" placeholder='[{"sprite": 1, "color": 1, "x": 0.0, "y": 0.0, "z": 0.0}]'></textarea>
+                            </div>
+                            <div id="section-bossmenu" class="section-content hidden">
+                                <label>Boss Menu</label>
+                                <select id="jobBossMenu">
+                                    <option value="1">Enabled</option>
+                                    <option value="0">Disabled</option>
+                                </select>
+                            </div>
+                            <div id="section-collections" class="section-content hidden">
+                                <label>Collecting Zones (JSON)</label>
+                                <textarea id="jobCollections" placeholder='[]'></textarea>
+                            </div>
+                            <div id="section-spawnerzones" class="section-content hidden">
+                                <label>Spawner Zones (JSON)</label>
+                                <textarea id="jobSpawnerZones" placeholder='[]'></textarea>
+                            </div>
+                            <div id="section-crafting" class="section-content hidden">
+                                <label>Crafting Enabled</label>
+                                <select id="jobCrafting">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div id="section-garages" class="section-content hidden">
+                                <label>Garages (JSON)</label>
+                                <textarea id="jobGarages" placeholder='[]'></textarea>
+                            </div>
+                            <div id="section-selling" class="section-content hidden">
+                                <label>Selling Enabled</label>
+                                <select id="jobSelling">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <button class="primary-button" onclick="submitCreateJob()">Create Job</button>
+                        </div>
+                    </div>
+
+                    <div id="panel-zones" class="panel-content hidden">
+                        <div class="panel summary-card">
+                            <h3>Zone Types</h3>
+                            <p>Build blips, boss actions, cloakrooms, stashes, collecting, crafting, garages, and selling zones from one panel.</p>
+                        </div>
+                        <div class="feature-grid">
+                            <div class="feature-card"><strong>Blips</strong><p>Job-specific map markers.</p></div>
+                            <div class="feature-card"><strong>Boss Menus</strong><p>Grade-based permissions and society integration.</p></div>
+                            <div class="feature-card"><strong>Cloakrooms</strong><p>Outfit zones compatible with appearance systems.</p></div>
+                            <div class="feature-card"><strong>Crafting</strong><p>Design recipes, blueprints, and animations.</p></div>
+                            <div class="feature-card"><strong>Garages</strong><p>Advanced vehicle systems with separate database support.</p></div>
+                            <div class="feature-card"><strong>Selling</strong><p>Employee commissions and currency options.</p></div>
+                        </div>
+                    </div>
+
+                    <div id="panel-community" class="panel-content hidden">
+                        <div class="panel summary-card">
+                            <h3>Community Jobs</h3>
+                            <p>Import pre-made jobs from other creators. Use built-in templates to speed up setup.</p>
+                        </div>
+                        <div class="community-grid">
+                            <div class="community-card" onclick="selectCreateForm('job');"><strong>Bahama - Gabz</strong><p>Bar job template.</p></div>
+                            <div class="community-card" onclick="selectCreateForm('job');"><strong>Burgershot - Gabz</strong><p>Fast-food job template.</p></div>
+                            <div class="community-card" onclick="selectCreateForm('job');"><strong>Police - Gabz</strong><p>Law enforcement job template.</p></div>
+                            <div class="community-card" onclick="selectCreateForm('job');"><strong>Winery - Dolu</strong><p>Winery job template.</p></div>
+                        </div>
+                    </div>
+
+                    <div id="panel-settings" class="panel-content hidden">
+                        <div class="panel summary-card">
+                            <h3>Integrations</h3>
+                            <p>Compatible with ESX, QBCore, QBox, ox_target or qb-target, and multiple dispatch systems.</p>
+                        </div>
+                        <div class="settings-list">
+                            <div class="settings-item"><strong>Framework</strong><span>ESX / QBCore / QBox</span></div>
+                            <div class="settings-item"><strong>Target</strong><span>ox_target / qtarget / qb-target</span></div>
+                            <div class="settings-item"><strong>Dispatch</strong><span>cd_dispatch, qs-dispatch, rcore_dispatch, etc.</span></div>
+                            <div class="settings-item"><strong>Logging</strong><span>Discord activity tracking optional.</span></div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+        <section class="tab-body" id="list">
+            <div class="panel-row">
+                <div class="panel full">
+                    <h3>List Script</h3>
+                    <div id="listScriptOutput" class="list-output"></div>
+                </div>
+            </div>
+            <div class="panel-row">
+                <div class="panel full">
+                    <h3>Admin</h3>
+                    <div id="listAdminOutput" class="list-output"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-body" id="admin">
+            <div class="panel-row">
+                <div class="panel">
+                    <h3>Kelola Admin</h3>
+                    <label>Identifier</label>
+                    <input id="adminIdentifier" type="text" placeholder="steam:110000112345678" />
+                    <label>Nama</label>
+                    <input id="adminName" type="text" placeholder="Nama Pemain" />
+                    <button onclick="submitAddAdmin()">Tambah Admin</button>
+                </div>
+                <div class="panel full">
+                    <h3>Admin</h3>
+                    <div id="adminListOutput" class="list-output"></div>
+                    <h3>Audit Log & Statistik</h3>
+                    <div class="stats-row" id="statsOutput"></div>
+                    <div id="auditOutput" class="list-output"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-body" id="export">
+            <div class="panel full">
+                <h3>Export</h3>
+                <p>Generate file Lua otomatis dengan semua data dari NPC, Blip, Marker, Item, dan Image.</p>
+                <button onclick="submitExport()">Export Sekarang</button>
+                <div class="export-info">File akan dibuat sebagai <strong>scriptcreator_export.lua</strong> di folder resource.</div>
+            </div>
+        </section>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
